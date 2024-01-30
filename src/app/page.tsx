@@ -1,5 +1,7 @@
+import LoginPage from "./login/page";
+
 export default function Home() {
   return (
-    <h1>Home</h1>
+    <LoginPage/>
   );
 }
