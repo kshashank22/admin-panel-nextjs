@@ -2,7 +2,11 @@ import mongoose, { Schema, models } from "mongoose";
 
 const UsersRegisterSchema = new Schema(
   {
-    name: {
+    firstname: {
+      type: String,
+      required: true,
+    },
+    lastname: {
       type: String,
       required: true,
     },
@@ -30,9 +34,18 @@ const UsersRegisterSchema = new Schema(
       type: Number,
       required: true,
     },
+    country: {
+      type: String,
+      required: true,
+    },
+    photo: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );
 
-const UserData = models.UserData || mongoose.model("UserData", UsersRegisterSchema);
+const UserData =
+  models.UserData || mongoose.model("UserData", UsersRegisterSchema);
 export default UserData;
