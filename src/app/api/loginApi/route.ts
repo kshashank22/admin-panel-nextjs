@@ -1,9 +1,11 @@
 import User from "@/models/RegisterSchema";
 import { NextResponse } from "next/server";
 import { compareSync } from "bcrypt-ts";
+import { connectMongoDB } from "@/mongoose/MongoDB";
 
 export async function POST(req: any) {
   try {
+    await connectMongoDB();
     const { email, password } = await req.json();
     const user = await User.findOne({ email });
     if (!user) {

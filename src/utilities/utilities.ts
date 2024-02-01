@@ -1,7 +1,4 @@
 import * as yup from "yup";
-import { RiAdminFill } from "react-icons/ri";
-import { RiUserAddFill } from "react-icons/ri";
-import { FaUsers } from "react-icons/fa6";
 
 export const registerValidateSchema: any = yup.object({
   name: yup
@@ -48,8 +45,6 @@ export const userValidateSchema: any = yup.object({
   address: yup.string().required("Address is Required"),
   pincode: yup.string().required("Pincode is Required"),
   city: yup.string().required("City is Required"),
-  country: yup.string().required("Country is Required"),
-  photo: yup.string().required("Photo is Required"),
 });
 
 export const RegisterDetails = [
@@ -72,5 +67,3 @@ export const UserDetails = [
   { text: "City", id: "city", type: "text" },
   { text: "Pincode", id: "pincode", type: "number" },
 ];
-export const Countries = ["Africa", "USA", "India", "China", "Russia"];
-export const PhotoDetail = [{ text: "Photo", id: "photo", type: "file" }];

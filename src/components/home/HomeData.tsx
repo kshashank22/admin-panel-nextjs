@@ -6,9 +6,9 @@ import React, { useEffect, useState } from "react";
 import { RiAdminFill } from "react-icons/ri";
 import { RiUserAddFill } from "react-icons/ri";
 import { FaUsers } from "react-icons/fa6";
-import AdminPage from "@/app/home/admin/page";
-import Userpage from "@/app/home/user/page";
-import AddUserPage from "@/app/home/addUser/page";
+import AdminPage from "@/app/dashboard/admindata/page";
+import Userpage from "@/app/dashboard/userdata/page";
+import AddUserPage from "@/app/dashboard/addUser/page";
 
 const HomeData = () => {
   const [name, setName] = useState("");

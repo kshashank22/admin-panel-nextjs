@@ -34,14 +34,6 @@ const UsersRegisterSchema = new Schema(
       type: Number,
       required: true,
     },
-    country: {
-      type: String,
-      required: true,
-    },
-    photo: {
-      type: String,
-      required: true,
-    },
   },
   { timestamps: true }
 );

@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Countries,
-  PhotoDetail,
-  UserDetails,
-  userValidateSchema,
-} from "@/utilities/utilities";
+import { UserDetails, userValidateSchema } from "@/utilities/utilities";
 import { CircularProgress } from "@mui/material";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
@@ -25,8 +20,6 @@ const AddUserData = () => {
     address: "",
     city: "",
     pincode: 0,
-    country: "",
-    photo: "",
   };
 
   const formik = useFormik<any>({
@@ -51,7 +44,7 @@ const AddUserData = () => {
         }
         if (response.ok) {
           formik.resetForm();
-          routing.push("/home");
+          routing.push("/dashboard/userdata");
           setLoader(false);
         } else {
           setLoader(false);
@@ -66,8 +59,8 @@ const AddUserData = () => {
   });
   return (
     <div>
-      <div className="flex flex-col items-center justify-center h-[100vh] bg-slate-600 col-span-6">
-        <div className="rounded bg-slate-100 p-5 xl:w-[30%] overflow-auto">
+      <div className="flex flex-col items-center justify-center h-[100vh] col-span-6">
+        <div className="rounded bg-slate-400 p-5 xl:w-[30%] overflow-auto">
           <h1 className="text-center text-3xl font-semibold">User Register</h1>
           <form onSubmit={formik.handleSubmit}>
             {UserDetails.map((e, i) => (
@@ -95,53 +88,7 @@ const AddUserData = () => {
                 ) : null}
               </div>
             ))}
-            <div className="m-5">
-              <label
-                className="text-slate text-md font-medium"
-                htmlFor="country"
-              >
-                Country
-              </label>
-              <select
-                name="country"
-                id="country"
-                className="sm:w-[250px] xl:w-[100%] p-[8px] mt-2"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-              >
-                <option>--select--</option>
-                {Countries.map((e, i) => (
-                  <option key={i} value={e}>
-                    {e}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {PhotoDetail.map((e, i) => (
-              <div key={i} className="m-5">
-                <label
-                  className="text-slate text-md font-medium"
-                  htmlFor={e.id}
-                >
-                  {e.text}
-                </label>
-                <div className="mt-2">
-                  <input
-                    type={e.type}
-                    id={e.id}
-                    className="sm:w-[250px] xl:w-[100%] p-[8px]"
-                    placeholder={`Enter the ${e.text}`}
-                    value={formik.values[e.id]}
-                    onChange={formik.handleChange}
-                  />
-                </div>
-                {formik.touched[e.id] && formik.errors[e.id] ? (
-                  <p className="text-red-700 text-md font-semibold mt-1">
-                    {formik.errors[e.id]}
-                  </p>
-                ) : null}
-              </div>
-            ))}
+
             <div className="text-center">
               <button
                 className="bg-slate-600 rounded text-slate-100 p-2 w-[80px]"

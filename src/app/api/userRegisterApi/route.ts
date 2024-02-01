@@ -13,8 +13,6 @@ export async function POST(req: any) {
       address,
       city,
       pincode,
-      country,
-      photo,
     } = await req.json();
     await connectMongoDB();
     const user = await UserData.findOne({ email }).select("_id");
@@ -33,8 +31,6 @@ export async function POST(req: any) {
       address,
       city,
       pincode,
-      country,
-      photo,
     });
 
     return NextResponse.json(

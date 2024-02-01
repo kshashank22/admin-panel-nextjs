@@ -3,7 +3,7 @@ import React from 'react'
 
 const AdminPage = () => {
   return (
-    <div>
+    <div className='relative left-16'>
       <AdminsData/>
     </div>
   )

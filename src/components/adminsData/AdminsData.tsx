@@ -5,7 +5,6 @@ import {
   useMaterialReactTable,
   type MRT_ColumnDef,
 } from "material-react-table";
-import Link from "next/link";
 
 type Person = {
   name: string;
@@ -58,22 +57,6 @@ const AdminsData = () => {
   return (
     <div>
       <MaterialReactTable table={table} />
-      {/* <div style={{ textAlign: "center" }}>
-        <Link href={"/"}>
-          <button
-            style={{
-              width: "100px",
-              padding: "5px",
-              marginTop: "5px",
-              backgroundColor: "black",
-              color: "white",
-              cursor: "pointer",
-            }}
-          >
-            Back To Register
-          </button>
-        </Link>
-      </div> */}
     </div>
   );
 };

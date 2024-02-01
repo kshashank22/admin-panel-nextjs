@@ -36,7 +36,7 @@ const LoginData = () => {
           localStorage.setItem("name", JSON.stringify(res.user));
           localStorage.setItem("role",JSON.stringify(res.role))
           formik.resetForm();
-          routing.push("/home");
+          routing.push("/dashboard");
           setLoader(false);
         } else {
           setLoader(false);
