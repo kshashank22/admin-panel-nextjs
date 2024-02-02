@@ -2,6 +2,8 @@ import User from "@/models/RegisterSchema";
 import { NextResponse } from "next/server";
 import { compareSync } from "bcrypt-ts";
 import { connectMongoDB } from "@/mongoose/MongoDB";
+import jwt from "jsonwebtoken";
+import { cookies } from "next/headers";
 
 export async function POST(req: any) {
   try {
@@ -21,11 +23,14 @@ export async function POST(req: any) {
         { status: 404 }
       );
     }
+    const authToken = jwt.sign({ id: user.id }, `${process.env.SECRET_KEY}`);
+   cookies().set('token',authToken)
     return NextResponse.json(
       {
         success: "Login successfully",
         user: user.name,
-        role:user.role,
+        role: user.role,
+        token: authToken,
       },
       { status: 200 }
     );

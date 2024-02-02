@@ -3,7 +3,7 @@ import React from 'react'
 
 const Userpage = () => {
   return (
-    <div className='relative left-16'>
+    <div className='relative left-16 bg-slate-200 h-screen'>
         <ExampleWithProviders/>
     </div>
   )

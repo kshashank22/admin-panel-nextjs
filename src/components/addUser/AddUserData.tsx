@@ -59,37 +59,39 @@ const AddUserData = () => {
   });
   return (
     <div>
-      <div className="flex flex-col items-center justify-center h-[100vh] col-span-6">
-        <div className="rounded bg-slate-400 p-5 xl:w-[30%] overflow-auto">
+      <div className="flex flex-col items-center justify-center h-[100vh] col-span-6 p-5 sm:p-0">
+        <div className="rounded-md bg-slate-400 p-5 xl:w-[30%] overflow-auto">
           <h1 className="text-center text-3xl font-semibold">User Register</h1>
           <form onSubmit={formik.handleSubmit}>
-            {UserDetails.map((e, i) => (
-              <div key={i} className="m-5">
-                <label
-                  className="text-slate text-md font-medium"
-                  htmlFor={e.id}
-                >
-                  {e.text}
-                </label>
-                <div className="mt-2">
-                  <input
-                    type={e.type}
-                    id={e.id}
-                    className="sm:w-[250px] xl:w-[100%] p-[8px]"
-                    placeholder={`Enter the ${e.text}`}
-                    value={formik.values[e.id]}
-                    onChange={formik.handleChange}
-                  />
+            <div className="grid grid-cols-1 sm:grid-cols-2">
+              {UserDetails.map((e, i) => (
+                <div key={i} className="m-5">
+                  <label
+                    className="text-slate text-md font-medium"
+                    htmlFor={e.id}
+                  >
+                    {e.text}
+                  </label>
+                  <div className="mt-2">
+                    <input
+                      type={e.type}
+                      id={e.id}
+                      className="sm:w-[250px] xl:w-[100%] p-[8px] rounded-md"
+                      placeholder={`Enter the ${e.text}`}
+                      value={formik.values[e.id]}
+                      onChange={formik.handleChange}
+                    />
+                  </div>
+                  {formik.touched[e.id] && formik.errors[e.id] ? (
+                    <p className="text-red-700 text-md font-semibold mt-1">
+                      {formik.errors[e.id]}
+                    </p>
+                  ) : null}
                 </div>
-                {formik.touched[e.id] && formik.errors[e.id] ? (
-                  <p className="text-red-700 text-md font-semibold mt-1">
-                    {formik.errors[e.id]}
-                  </p>
-                ) : null}
-              </div>
-            ))}
+              ))}
+            </div>
 
-            <div className="text-center">
+            <div className="flex justify-center">
               <button
                 className="bg-slate-600 rounded text-slate-100 p-2 w-[80px]"
                 type="submit"

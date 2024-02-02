@@ -3,7 +3,7 @@ import React from 'react'
 
 const AddUserPage = () => {
   return (
-    <div>
+    <div className='bg-slate-200 h-screen'>
       <AddUserData/>
     </div>
   )

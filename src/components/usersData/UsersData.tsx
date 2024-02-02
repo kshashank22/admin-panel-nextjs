@@ -463,7 +463,7 @@ function useDeleteUser() {
     },
     //client side optimistic update
     onMutate: (userId: string) => {
-      queryClient.setQueryData(["users"], (prevUsers: any) =>
+      queryClient.setQueryData(["userdata"], (prevUsers: any) =>
         prevUsers?.filter((user: Person) => user.email !== userId)
       );
       console.log(

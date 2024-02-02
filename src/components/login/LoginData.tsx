@@ -3,6 +3,7 @@
 import { LoginDetails, loginValidateSchema } from "@/utilities/utilities";
 import { CircularProgress } from "@mui/material";
 import { useFormik } from "formik";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -11,6 +12,8 @@ const LoginData = () => {
   const [error, setError] = useState("");
   const [loader, setLoader] = useState(false);
   const routing = useRouter();
+  // const cookie=cookies()
+  // const token=cookie.get("token")
 
   const initialValues = {
     email: "",
@@ -33,11 +36,16 @@ const LoginData = () => {
         });
         const res = await response.json();
         if (response.ok) {
-          localStorage.setItem("name", JSON.stringify(res.user));
-          localStorage.setItem("role",JSON.stringify(res.role))
-          formik.resetForm();
-          routing.push("/dashboard");
-          setLoader(false);
+          if (res.token) {
+            localStorage.setItem("name", JSON.stringify(res.user));
+            localStorage.setItem("role", JSON.stringify(res.role));
+            formik.resetForm();
+            routing.push("/dashboard");
+            setLoader(false);
+          }else{
+            setLoader(false);
+            setError("Token is Not Generated");
+          }
         } else {
           setLoader(false);
           setError(res.error);
