@@ -1,12 +1,21 @@
-import AdminsData from '@/components/adminsData/AdminsData'
-import React from 'react'
+import AdminsData from "@/components/adminsData/AdminsData";
+import axiosInstance from "@/utilities/axiosInstance";
+import React from "react";
 
-const AdminPage = () => {
-  return (
-    <div className='relative left-16 bg-slate-200 h-screen'>
-      <AdminsData/>
-    </div>
-  )
+async function getAdmins() {
+  const getResponse = await axiosInstance("/api/getAdminApi", {
+    method: "GET",
+  });
+  return getResponse.data.data;
 }
 
-export default AdminPage
+const AdminPage = async () => {
+  const admins:any = await getAdmins();
+  return (
+    <div className="relative left-16 bg-slate-200 h-screen">
+      <AdminsData admins={admins} />
+    </div>
+  );
+};
+
+export default AdminPage;

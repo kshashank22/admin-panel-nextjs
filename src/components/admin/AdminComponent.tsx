@@ -99,14 +99,6 @@ const Drawer = styled(MuiDrawer, {
 export default function Navbars() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [name, setName] = React.useState("");
-
-  React.useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("name"));
-    if (data) {
-      setName(data);
-    }
-  }, []);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -142,17 +134,6 @@ export default function Navbars() {
       </AppBar>
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
-          {name && (
-            <>
-              Welcome,{" "}
-              <Typography
-                paragraph
-                className="text-start mt-5 mr-12 font-semibold"
-              >
-                {name}
-              </Typography>
-            </>
-          )}
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
@@ -251,7 +232,11 @@ export default function Navbars() {
           ))}
         </List>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }} className="md:pt-10 pt-8" >
+      <Box
+        component="main"
+        sx={{ flexGrow: 1, p: 3 }}
+        className="md:pt-10 pt-8"
+      >
         {/* <DrawerHeader /> */}
       </Box>
     </Box>

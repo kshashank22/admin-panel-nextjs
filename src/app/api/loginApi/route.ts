@@ -23,7 +23,7 @@ export async function POST(req: any) {
         { status: 404 }
       );
     }
-    const authToken = jwt.sign({ id: user.id }, `${process.env.SECRET_KEY}`);
+    const authToken = jwt.sign({ id: user.id,email:user.email,name:user.name }, `${process.env.SECRET_KEY}`);
    cookies().set('token',authToken)
     return NextResponse.json(
       {

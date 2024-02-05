@@ -1,9 +1,10 @@
 "use client";
 
+import { loginData } from "@/app/login/page";
 import { LoginDetails, loginValidateSchema } from "@/utilities/utilities";
 import { CircularProgress } from "@mui/material";
 import { useFormik } from "formik";
-import { cookies } from "next/headers";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -12,8 +13,6 @@ const LoginData = () => {
   const [error, setError] = useState("");
   const [loader, setLoader] = useState(false);
   const routing = useRouter();
-  // const cookie=cookies()
-  // const token=cookie.get("token")
 
   const initialValues = {
     email: "",
@@ -27,22 +26,21 @@ const LoginData = () => {
       setError("");
       setLoader(true);
       try {
-        const response = await fetch("api/loginApi", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
-        });
+        // const response = await fetch("api/loginApi", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify(values),
+        // });
+        const response= await loginData(values)
         const res = await response.json();
         if (response.ok) {
           if (res.token) {
-            localStorage.setItem("name", JSON.stringify(res.user));
-            localStorage.setItem("role", JSON.stringify(res.role));
             formik.resetForm();
             routing.push("/dashboard");
             setLoader(false);
-          }else{
+          } else {
             setLoader(false);
             setError("Token is Not Generated");
           }

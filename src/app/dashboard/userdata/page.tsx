@@ -1,12 +1,19 @@
-import ExampleWithProviders from '@/components/usersData/UsersData'
-import React from 'react'
+import ExampleWithProviders from "@/components/usersData/UsersData";
+import axiosInstance from "@/utilities/axiosInstance";
+import React from "react";
 
-const Userpage = () => {
-  return (
-    <div className='relative left-16 bg-slate-200 h-screen'>
-        <ExampleWithProviders/>
-    </div>
-  )
+async function getUsers() {
+  const getResponse = await axiosInstance.get("/api/getUserApi");
+  return getResponse.data.data;
 }
 
-export default Userpage
+const Userpage = async () => {
+  const users = await getUsers();
+  return (
+    <div className="relative left-16 bg-slate-200 h-screen">
+      <ExampleWithProviders users={users} />
+    </div>
+  );
+};
+
+export default Userpage;

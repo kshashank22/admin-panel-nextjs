@@ -1,11 +1,14 @@
 "use client";
 
+import { registerData } from "@/app/register/page";
 import { RegisterDetails, registerValidateSchema } from "@/utilities/utilities";
 import { CircularProgress } from "@mui/material";
 import { useFormik } from "formik";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const RegisterData = () => {
   const [error, setError] = useState("");
@@ -26,13 +29,14 @@ const RegisterData = () => {
     onSubmit: async (values) => {
       setLoader(true);
       try {
-        const response = await fetch("api/registerApi", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
-        });
+        // const response = await fetch("api/registerApi", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify(values),
+        // });
+        const response=await registerData(values)
         const res = await response.json();
         if (res.errors) {
           setLoader(false);
@@ -40,6 +44,10 @@ const RegisterData = () => {
           return;
         }
         if (response.ok) {
+          toast("Registered Successfully", {
+            position: "top-right",
+            autoClose: 5000,
+          });
           formik.resetForm();
           routing.push("/login");
           setLoader(false);
@@ -55,6 +63,7 @@ const RegisterData = () => {
   });
   return (
     <div>
+      <ToastContainer />
       <div className="flex flex-col items-center justify-center h-[100vh] bg-slate-600">
         <div className="rounded bg-slate-100 p-5 xl:w-[30%] overflow-auto">
           <h1 className="text-center text-3xl font-semibold">Register</h1>

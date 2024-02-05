@@ -12,22 +12,7 @@ type Person = {
   role: string;
 };
 
-const AdminsData = () => {
-  const [adminData, setAdminData] = useState<Person[]>([]);
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const getResponse: any = await fetch("../api/getAdminApi", {
-          method: "GET",
-        });
-        const res = await getResponse.json();
-        setAdminData(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getData();
-  }, []);
+const AdminsData = ({admins}:any) => {
   const columns = useMemo<MRT_ColumnDef<Person>[]>(
     () => [
       {
@@ -51,7 +36,7 @@ const AdminsData = () => {
 
   const table = useMaterialReactTable({
     columns,
-    data: adminData,
+    data: admins,
   });
 
   return (

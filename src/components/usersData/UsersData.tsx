@@ -17,6 +17,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  Pagination,
   Tooltip,
 } from "@mui/material";
 import {
@@ -74,25 +75,12 @@ type Person = {
   city: string;
 };
 
-const UserData = () => {
+const UserData = ({ users }: any) => {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string | undefined>
   >({});
-  const [userData, setUserData] = useState<any[]>([]);
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const getResponse: any = await fetch("../api/getUserApi", {
-          method: "GET",
-        });
-        const res = await getResponse.json();
-        setUserData(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getData();
-  }, []);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10; // Set your desired page size
 
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
@@ -232,7 +220,11 @@ const UserData = () => {
     isError: isLoadingUsersError,
     isFetching: isFetchingUsers,
     isLoading: isLoadingUsers,
-  } = useGetUsers();
+  } = useGetUsers(currentPage);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
   //call UPDATE hook
   const { mutateAsync: updateUser, isPending: isUpdatingUser } =
     useUpdateUser();
@@ -277,7 +269,7 @@ const UserData = () => {
 
   const table = useMaterialReactTable({
     columns,
-    data: userData,
+    data: users,
     createDisplayMode: "modal", //default ('row', and 'custom' are also available)
     editDisplayMode: "modal", //default ('row', 'cell', 'table', and 'custom' are also available)
     enableEditing: true,
@@ -341,12 +333,15 @@ const UserData = () => {
     ),
     renderTopToolbarCustomActions: ({ table }) => (
       <Link href={"/dashboard/addUser"}>
-      <Button
-        variant="outlined"
-      >
-        Create New User
-      </Button>
+        <Button variant="outlined">Create New User</Button>
       </Link>
+    ),
+    renderBottomToolbarCustomActions: () => (
+      <Pagination
+        currentPage={currentPage}
+        totalPages={Math.ceil(users.length / pageSize)}
+        onPageChange={handlePageChange}
+      />
     ),
     state: {
       isLoading: isLoadingUsers,
@@ -399,28 +394,14 @@ function useCreateUser() {
 }
 
 //READ hook (get users from api)
-function useGetUsers() {
-  const [userData, setUserData] = useState<any[]>([]);
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const getResponse: any = await fetch("../api/getUserApi", {
-          method: "GET",
-        });
-        const res = await getResponse.json();
-        setUserData(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getData();
-  }, []);
+function useGetUsers(users: any) {
+  const [userData, setUserData] = useState(users);
   return useQuery<Person[]>({
     queryKey: ["users"],
     queryFn: async () => {
       //send api request here
       await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
-      return Promise.resolve(userData);
+      return Promise.resolve(users);
     },
     refetchOnWindowFocus: false,
   });
@@ -442,11 +423,13 @@ function useUpdateUser() {
           prevUser.email === newUserInfo.email ? newUserInfo : prevUser
         )
       );
-      console.log(queryClient.setQueryData(["users"], (prevUsers: any) =>
-      prevUsers?.map((prevUser: Person) =>
-        prevUser.email === newUserInfo.email ? newUserInfo : prevUser
-      )
-    ))
+      console.log(
+        queryClient.setQueryData(["users"], (prevUsers: any) =>
+          prevUsers?.map((prevUser: Person) =>
+            prevUser.email === newUserInfo.email ? newUserInfo : prevUser
+          )
+        )
+      );
     },
     // onSettled: () => queryClient.invalidateQueries({ queryKey: ['users'] }), //refetch users after mutation, disabled for demo
   });
@@ -478,10 +461,10 @@ function useDeleteUser() {
 
 const queryClient = new QueryClient();
 
-const ExampleWithProviders = () => (
+const ExampleWithProviders = ({ users }: any) => (
   //Put this with your other react-query providers near root of your app
   <QueryClientProvider client={queryClient}>
-    <UserData />
+    <UserData users={users} />
   </QueryClientProvider>
 );
 
