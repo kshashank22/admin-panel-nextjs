@@ -7,8 +7,7 @@ export default function RootLayout({
 }>) {
   return (
     <div>
-      <Navbars/>
-      {children}
+      <Navbars pages={children} />
     </div>
   );
 }

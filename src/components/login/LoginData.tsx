@@ -4,15 +4,14 @@ import { loginData } from "@/app/login/page";
 import { LoginDetails, loginValidateSchema } from "@/utilities/utilities";
 import { CircularProgress } from "@mui/material";
 import { useFormik } from "formik";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 const LoginData = () => {
   const [error, setError] = useState("");
   const [loader, setLoader] = useState(false);
-  const routing = useRouter();
 
   const initialValues = {
     email: "",
@@ -26,19 +25,16 @@ const LoginData = () => {
       setError("");
       setLoader(true);
       try {
-        // const response = await fetch("api/loginApi", {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify(values),
-        // });
-        const response= await loginData(values)
+        const response = await loginData(values);
         const res = await response.json();
         if (response.ok) {
           if (res.token) {
+            toast("Login Successfully", {
+              position: "top-right",
+              autoClose: 5000,
+            });
             formik.resetForm();
-            routing.push("/dashboard");
+            window.location.href = "/dashboard";
             setLoader(false);
           } else {
             setLoader(false);
@@ -56,6 +52,7 @@ const LoginData = () => {
   });
   return (
     <div className="flex flex-col items-center justify-center h-[100vh] bg-slate-600">
+      <ToastContainer />
       <div className="rounded bg-slate-100 p-5 xl:w-[30%]">
         <h1 className="text-center text-3xl font-semibold">Login</h1>
         <form onSubmit={formik.handleSubmit} className="gap-10">

@@ -12,7 +12,7 @@ async function getAdmins() {
 const AdminPage = async () => {
   const admins:any = await getAdmins();
   return (
-    <div className="relative left-16 bg-slate-200 h-screen">
+    <div className="relative">
       <AdminsData admins={admins} />
     </div>
   );

@@ -31,7 +31,7 @@ const Details = [
 
 const DashboardDetails = () => {
   return (
-    <div className="bg-slate-200 h-screen overflow-auto pt-20">
+    <div className="h-screen overflow-auto pt-20">
       <div className="flex justify-center mb-20">
         <div className="text-center w-[50%] m-auto">
           <h1 className=" text-slate-800 text-2xl font-semibold">

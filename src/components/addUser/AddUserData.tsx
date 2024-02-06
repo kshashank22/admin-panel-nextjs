@@ -19,7 +19,7 @@ const AddUserData = () => {
     mothersname: "",
     address: "",
     city: "",
-    pincode: 0,
+    pincode: null,
   };
 
   const formik = useFormik<any>({

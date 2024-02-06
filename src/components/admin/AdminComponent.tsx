@@ -24,6 +24,7 @@ import { RiUserAddFill } from "react-icons/ri";
 import { FaUsers } from "react-icons/fa6";
 import { FaUser } from "react-icons/fa";
 import Link from "next/link";
+import axiosInstance from "@/utilities/axiosInstance";
 
 const drawerWidth = 240;
 
@@ -96,7 +97,7 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-export default function Navbars() {
+export default function Navbars({pages}:any) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
@@ -106,6 +107,14 @@ export default function Navbars() {
 
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  const handleLogout = async () => {
+    const response = await axiosInstance.post("../api/logoutApi");
+    console.log(response);
+    if (response.status === 201) {
+      window.location.href = "/";
+    }
   };
 
   return (
@@ -204,40 +213,38 @@ export default function Navbars() {
               link: "../login",
             },
           ].map((items, index) => (
-            <Link href={items.link} key={index}>
-              <ListItem disablePadding sx={{ display: "block" }}>
-                <ListItemButton
+            // <Link href={items.link}>
+            <ListItem disablePadding sx={{ display: "block" }} key={index}>
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                }}
+                onClick={handleLogout}
+              >
+                <ListItemIcon
                   sx={{
-                    minHeight: 48,
-                    justifyContent: open ? "initial" : "center",
-                    px: 2.5,
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
                   }}
                 >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : "auto",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {items.icon}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={items.text}
-                    sx={{ opacity: open ? 1 : 0 }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            </Link>
+                  {items.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={items.text}
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
+              </ListItemButton>
+            </ListItem>
+            // </Link>
           ))}
         </List>
       </Drawer>
-      <Box
-        component="main"
-        sx={{ flexGrow: 1, p: 3 }}
-        className="md:pt-10 pt-8"
-      >
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }} className="bg-slate-200 h-screen overflow-auto mt-[54px]">
         {/* <DrawerHeader /> */}
+        {pages}
       </Box>
     </Box>
   );

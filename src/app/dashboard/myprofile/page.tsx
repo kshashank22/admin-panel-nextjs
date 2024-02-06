@@ -6,7 +6,7 @@ const ProfilePage = () => {
   const cookie = cookies();
   const token:any = cookie.get("token");
   return (
-    <div  className='bg-slate-200 h-screen'>
+    <div>
       <Profile details={token}/>
     </div>
   )

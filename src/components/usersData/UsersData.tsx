@@ -8,6 +8,9 @@ import {
   type MRT_ColumnDef,
   type MRT_Row,
   type MRT_TableOptions,
+  type MRT_ColumnFiltersState,
+  type MRT_PaginationState,
+  type MRT_SortingState,
   useMaterialReactTable,
 } from "material-react-table";
 import {
@@ -30,6 +33,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Link from "next/link";
+import { getUsersData } from "@/app/dashboard/userdata/page";
 
 type User = {
   id: string;
@@ -79,10 +83,82 @@ const UserData = ({ users }: any) => {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string | undefined>
   >({});
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10; // Set your desired page size
+  const [data, setData] = useState<any[]>([users]);
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isRefetching, setIsRefetching] = useState(false);
+  const [rowCount, setRowCount] = useState(0);
 
-  const columns = useMemo<MRT_ColumnDef<any>[]>(
+  //table state
+  const [columnFilters, setColumnFilters] = useState<MRT_ColumnFiltersState>(
+    []
+  );
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [sorting, setSorting] = useState<MRT_SortingState>([]);
+  const [pagination, setPagination] = useState<MRT_PaginationState>({
+    pageIndex: 0,
+    pageSize: 5,
+  });
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (!data.length) {
+          setIsLoading(true);
+        } else {
+          setIsRefetching(true);
+        }
+  
+        // const url = new URL(
+        //   `/api/getUserApi?page=${pagination.pageIndex}&limit=${pagination.pageSize}}`,
+        //   process.env.REACT_APP_BASE_URL === "production"
+        //     ? "https://www.material-react-table.com"
+        //     : "http://localhost:3000"
+        // );
+        const url=getUsersData(pagination);
+        {console.log(url,"cfgvhbjnjm")}
+        url.searchParams.set(
+          "start",
+          `${pagination.pageIndex * pagination.pageSize}`
+        );
+        url.searchParams.set("size", `${pagination.pageSize}`);
+        url.searchParams.set("filters", JSON.stringify(columnFilters ?? []));
+        url.searchParams.set("globalFilter", globalFilter ?? "");
+        url.searchParams.set("sorting", JSON.stringify(sorting ?? []));
+  
+        console.log("API Request URL:", url.href); // Log API request URL
+  
+        const response = await fetch(url.href);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        const json = await response.json();
+        console.log("API Response:", json); // Log API response
+  
+        setData(json.data);
+        setRowCount(json.data.length);
+        setIsError(false);
+        setIsLoading(false);
+        setIsRefetching(false);
+      } catch (error) {
+        setIsError(true);
+        setIsLoading(false);
+        setIsRefetching(false);
+        console.error("API Request Error:", error); // Log API request error
+      }
+    };
+  
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    columnFilters,
+    globalFilter,
+    pagination.pageIndex,
+    pagination.pageSize,
+    sorting,
+  ]);
+  
+  const columns = useMemo<MRT_ColumnDef<Person>[]>(
     () => [
       {
         accessorKey: "firstname",
@@ -220,11 +296,11 @@ const UserData = ({ users }: any) => {
     isError: isLoadingUsersError,
     isFetching: isFetchingUsers,
     isLoading: isLoadingUsers,
-  } = useGetUsers(currentPage);
+  } = useGetUsers(users);
 
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-  };
+  // const handlePageChange = (newPage: number) => {
+  //   setCurrentPage(newPage);
+  // };
   //call UPDATE hook
   const { mutateAsync: updateUser, isPending: isUpdatingUser } =
     useUpdateUser();
@@ -269,11 +345,28 @@ const UserData = ({ users }: any) => {
 
   const table = useMaterialReactTable({
     columns,
-    data: users,
+    data,
+    manualFiltering: true,
+    manualSorting: true,
+    onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
+    onPaginationChange: setPagination,
+    onSortingChange: setSorting,
+    rowCount,
+    state: {
+      columnFilters,
+      globalFilter,
+      isLoading,
+      pagination,
+      showAlertBanner: isError,
+      showProgressBars: isRefetching,
+      sorting,
+    },
     createDisplayMode: "modal", //default ('row', and 'custom' are also available)
     editDisplayMode: "modal", //default ('row', 'cell', 'table', and 'custom' are also available)
     enableEditing: true,
     getRowId: (row) => row.email,
+    manualPagination: true,
     muiToolbarAlertBannerProps: isLoadingUsersError
       ? {
           color: "error",
@@ -336,19 +429,13 @@ const UserData = ({ users }: any) => {
         <Button variant="outlined">Create New User</Button>
       </Link>
     ),
-    renderBottomToolbarCustomActions: () => (
-      <Pagination
-        currentPage={currentPage}
-        totalPages={Math.ceil(users.length / pageSize)}
-        onPageChange={handlePageChange}
-      />
-    ),
-    state: {
-      isLoading: isLoadingUsers,
-      isSaving: isCreatingUser || isUpdatingUser || isDeletingUser,
-      showAlertBanner: isLoadingUsersError,
-      showProgressBars: isFetchingUsers,
-    },
+    // renderBottomToolbarCustomActions: () => (
+    //   <Pagination
+    //     currentPage={currentPage}
+    //     totalPages={Math.ceil(users.length / pageSize)}
+    //     onPageChange={handlePageChange}
+    //   />
+    // ),
   });
 
   return <MaterialReactTable table={table} />;
@@ -395,7 +482,6 @@ function useCreateUser() {
 
 //READ hook (get users from api)
 function useGetUsers(users: any) {
-  const [userData, setUserData] = useState(users);
   return useQuery<Person[]>({
     queryKey: ["users"],
     queryFn: async () => {
@@ -467,7 +553,6 @@ const ExampleWithProviders = ({ users }: any) => (
     <UserData users={users} />
   </QueryClientProvider>
 );
-
 export default ExampleWithProviders;
 
 const validateRequired = (value: string) => !!value.length;
