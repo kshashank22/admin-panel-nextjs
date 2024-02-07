@@ -107,15 +107,7 @@ const UserData = ({ users }: any) => {
         } else {
           setIsRefetching(true);
         }
-  
-        // const url = new URL(
-        //   `/api/getUserApi?page=${pagination.pageIndex}&limit=${pagination.pageSize}}`,
-        //   process.env.REACT_APP_BASE_URL === "production"
-        //     ? "https://www.material-react-table.com"
-        //     : "http://localhost:3000"
-        // );
-        const url=getUsersData(pagination);
-        {console.log(url,"cfgvhbjnjm")}
+        const url = getUsersData(pagination);
         url.searchParams.set(
           "start",
           `${pagination.pageIndex * pagination.pageSize}`
@@ -124,17 +116,17 @@ const UserData = ({ users }: any) => {
         url.searchParams.set("filters", JSON.stringify(columnFilters ?? []));
         url.searchParams.set("globalFilter", globalFilter ?? "");
         url.searchParams.set("sorting", JSON.stringify(sorting ?? []));
-  
+
         console.log("API Request URL:", url.href); // Log API request URL
-  
+
         const response = await fetch(url.href);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        
+
         const json = await response.json();
         console.log("API Response:", json); // Log API response
-  
+
         setData(json.data);
         setRowCount(json.data.length);
         setIsError(false);
@@ -147,7 +139,7 @@ const UserData = ({ users }: any) => {
         console.error("API Request Error:", error); // Log API request error
       }
     };
-  
+
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -157,7 +149,7 @@ const UserData = ({ users }: any) => {
     pagination.pageSize,
     sorting,
   ]);
-  
+
   const columns = useMemo<MRT_ColumnDef<Person>[]>(
     () => [
       {
@@ -348,6 +340,13 @@ const UserData = ({ users }: any) => {
     data,
     manualFiltering: true,
     manualSorting: true,
+    enableStickyHeader: true,
+    enableStickyFooter: true,
+    muiTableBodyCellProps: {
+      sx: (theme) => ({
+        backgroundColor:
+            theme.palette.grey[200]
+      })},
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
     onPaginationChange: setPagination,
@@ -362,11 +361,11 @@ const UserData = ({ users }: any) => {
       showProgressBars: isRefetching,
       sorting,
     },
-    createDisplayMode: "modal", //default ('row', and 'custom' are also available)
-    editDisplayMode: "modal", //default ('row', 'cell', 'table', and 'custom' are also available)
+    // createDisplayMode: "modal", //default ('row', and 'custom' are also available)
+    // editDisplayMode: "modal", //default ('row', 'cell', 'table', and 'custom' are also available)
     enableEditing: true,
     getRowId: (row) => row.email,
-    manualPagination: true,
+    manualPagination: false,
     muiToolbarAlertBannerProps: isLoadingUsersError
       ? {
           color: "error",
@@ -375,7 +374,7 @@ const UserData = ({ users }: any) => {
       : undefined,
     muiTableContainerProps: {
       sx: {
-        minHeight: "500px",
+        minHeight: "300px",
       },
     },
     onCreatingRowCancel: () => setValidationErrors({}),
@@ -429,13 +428,6 @@ const UserData = ({ users }: any) => {
         <Button variant="outlined">Create New User</Button>
       </Link>
     ),
-    // renderBottomToolbarCustomActions: () => (
-    //   <Pagination
-    //     currentPage={currentPage}
-    //     totalPages={Math.ceil(users.length / pageSize)}
-    //     onPageChange={handlePageChange}
-    //   />
-    // ),
   });
 
   return <MaterialReactTable table={table} />;
@@ -509,13 +501,6 @@ function useUpdateUser() {
           prevUser.email === newUserInfo.email ? newUserInfo : prevUser
         )
       );
-      console.log(
-        queryClient.setQueryData(["users"], (prevUsers: any) =>
-          prevUsers?.map((prevUser: Person) =>
-            prevUser.email === newUserInfo.email ? newUserInfo : prevUser
-          )
-        )
-      );
     },
     // onSettled: () => queryClient.invalidateQueries({ queryKey: ['users'] }), //refetch users after mutation, disabled for demo
   });
@@ -532,13 +517,8 @@ function useDeleteUser() {
     },
     //client side optimistic update
     onMutate: (userId: string) => {
-      queryClient.setQueryData(["userdata"], (prevUsers: any) =>
+      queryClient.setQueryData(["users"], (prevUsers: any) =>
         prevUsers?.filter((user: Person) => user.email !== userId)
-      );
-      console.log(
-        queryClient.setQueryData(["users"], (prevUsers: any) =>
-          prevUsers?.filter((user: Person) => user.email !== userId)
-        )
       );
     },
     // onSettled: () => queryClient.invalidateQueries({ queryKey: ['users'] }), //refetch users after mutation, disabled for demo

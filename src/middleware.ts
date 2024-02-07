@@ -14,6 +14,8 @@ export function middleware(request:any) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     } else if (url.pathname === "/register") {
       return NextResponse.redirect(new URL("/dashboard", request.url));
+    }else if (url.pathname === "/forgotPassword") {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   }
 }

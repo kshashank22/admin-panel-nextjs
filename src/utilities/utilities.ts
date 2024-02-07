@@ -24,6 +24,18 @@ export const loginValidateSchema: any = yup.object({
     .required("Password is required"),
 });
 
+export const forgotValidateSchema: any = yup.object({
+  email: yup.string().email("Email must valid").required("Email is Required"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(6, "Password must be at least 6 characters."),
+  confirmpassword: yup
+    .string()
+    .oneOf([yup.ref("password")], "Passwords must match")
+    .required("Confirm Password is required"),
+});
+
 export const userValidateSchema: any = yup.object({
   firstname: yup
     .string()
@@ -56,6 +68,11 @@ export const RegisterDetails = [
 export const LoginDetails = [
   { text: "Email", id: "email", type: "text" },
   { text: "Password", id: "password", type: "password" },
+];
+export const ResetDetails = [
+  { text: "Email", id: "email", type: "text" },
+  { text: "New Password", id: "password", type: "password" },
+  { text: "Confirm New Password", id: "confirmpassword", type: "password" },
 ];
 export const UserDetails = [
   { text: "FirstName", id: "firstname", type: "text" },

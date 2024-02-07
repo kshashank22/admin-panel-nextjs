@@ -1,52 +1,48 @@
 "use client";
 
-import { loginData } from "@/app/login/page";
-import { LoginDetails, loginValidateSchema } from "@/utilities/utilities";
+import { ResetDetails, forgotValidateSchema } from "@/utilities/utilities";
 import { CircularProgress } from "@mui/material";
 import { useFormik } from "formik";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
 import React, { useState } from "react";
+import { forgotData } from "@/app/forgotPassword/page";
 
-const LoginData = () => {
+const ForgotPasswordData = () => {
   const [error, setError] = useState("");
   const [loader, setLoader] = useState(false);
 
   const initialValues = {
     email: "",
-    password: "",
+    password:"",
+    confirmpassword:""
   };
 
   const formik = useFormik<any>({
     initialValues: initialValues,
-    validationSchema: loginValidateSchema,
+    validationSchema: forgotValidateSchema,
     onSubmit: async (values: any) => {
       setError("");
       setLoader(true);
       try {
-        const response = await loginData(values);
+        const response = await forgotData(values);
         const res = await response.json();
         if (response.ok) {
-          if (res.token) {
-            toast("Login Successfully", {
-              position: "top-right",
-              autoClose: 5000,
-            });
-            formik.resetForm();
-            window.location.href = "/dashboard";
-            setLoader(false);
-          } else {
-            setLoader(false);
-            setError("Token is Not Generated");
-          }
+          toast("Reset Successfully", {
+            position: "top-right",
+            autoClose: 5000,
+          });
+          formik.resetForm();
+          window.location.href = "/";
+          setLoader(false);
         } else {
           setLoader(false);
-          setError(res.error);
+          setError(res.errors);
         }
       } catch (error: any) {
         setLoader(false);
-        console.log("Error During Login:", error);
+        console.log("Error During Reset Password:", error);
       }
     },
   });
@@ -54,9 +50,9 @@ const LoginData = () => {
     <div className="flex flex-col items-center justify-center h-[100vh] bg-slate-600">
       <ToastContainer />
       <div className="rounded bg-slate-100 p-5 xl:w-[30%]">
-        <h1 className="text-center text-3xl font-semibold">Login</h1>
+        <h1 className="text-center text-3xl font-semibold">Forgot Password</h1>
         <form onSubmit={formik.handleSubmit} className="gap-10">
-          {LoginDetails.map((e, i) => (
+        {ResetDetails.map((e, i) => (
             <div key={i} className="m-5">
               <label className="text-slate text-md font-medium" htmlFor={e.id}>
                 {e.text}
@@ -78,11 +74,6 @@ const LoginData = () => {
               ) : null}
             </div>
           ))}
-          <div className="m-5">
-          <Link href={"/forgotPassword"}>
-            <p className="cursor-pointer text-sm">Forgot the Password? Reset Here</p>
-            </Link>
-          </div>
           <div className="text-center">
             <button
               className="bg-slate-600 rounded text-slate-100 p-2 w-[80px]"
@@ -91,14 +82,14 @@ const LoginData = () => {
               {loader ? (
                 <CircularProgress size={"1rem"} color="inherit" />
               ) : (
-                "Login"
+                "Submit"
               )}
             </button>
           </div>
           <div className="m-5">
-            <Link href={"/register"}>
+            <Link href={"/"}>
               <p className="text-slate text-sm cursor-pointer">
-                Doesn't Have Account? Register Here
+                Back to Login? Click Here
               </p>
             </Link>
           </div>
@@ -113,4 +104,4 @@ const LoginData = () => {
   );
 };
 
-export default LoginData;
+export default ForgotPasswordData;
