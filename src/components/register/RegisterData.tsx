@@ -1,6 +1,7 @@
 "use client";
 
 import { registerData } from "@/app/register/page";
+import axiosInstance from "@/utilities/axiosInstance";
 import { RegisterDetails, registerValidateSchema } from "@/utilities/utilities";
 import { CircularProgress } from "@mui/material";
 import { useFormik } from "formik";
@@ -14,6 +15,7 @@ const RegisterData = () => {
   const [error, setError] = useState("");
   const [loader, setLoader] = useState(false);
   const routing = useRouter();
+  const [file, setFile] = useState<any>(null);
 
   const initialValues = {
     name: "",
@@ -21,6 +23,7 @@ const RegisterData = () => {
     password: "",
     confirmpassword: "",
     role: "Admin",
+    image: "",
   };
 
   const formik = useFormik<any>({
@@ -29,14 +32,18 @@ const RegisterData = () => {
     onSubmit: async (values) => {
       setLoader(true);
       try {
-        // const response = await fetch("api/registerApi", {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify(values),
-        // });
-        const response=await registerData(values)
+        const formData = new FormData();
+        formData.append("file", file);
+        await axiosInstance.post(
+          `/api/setImageApi?email=${values.email}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        const response = await registerData(values);
         const res = await response.json();
         if (res.errors) {
           setLoader(false);
@@ -93,6 +100,23 @@ const RegisterData = () => {
                 ) : null}
               </div>
             ))}
+            <div className="m-5">
+              <label
+                className="text-slate text-md font-medium"
+                htmlFor={"image"}
+              >
+                Upload Image
+              </label>
+              <div className="mt-2">
+                <input
+                  type={"file"}
+                  id={"image"}
+                  className="sm:w-[250px] xl:w-[100%] p-[8px]"
+                  onChange={(e: any) => setFile(e.target.files?.[0])}
+                />
+              </div>
+
+            </div>
             <div className="text-center">
               <button
                 className="bg-slate-600 rounded text-slate-100 p-2 w-[80px]"

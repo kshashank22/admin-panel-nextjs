@@ -1,36 +1,37 @@
 import { connectMongoDB } from "@/mongoose/MongoDB";
 import { NextResponse } from "next/server";
 import UserData from "@/models/UsersRegisterSchema";
+import AllData from "@/models/DataSchema";
+import { genSaltSync, hashSync } from "bcrypt-ts";
 
 export async function POST(req: any) {
   try {
+    const salt = genSaltSync(10);
     const {
-      firstname,
-      lastname,
+      name,
       email,
-      fathersname,
-      mothersname,
+      password,
+      confirmpassword,
       address,
       city,
-      pincode,
+      role
     } = await req.json();
     await connectMongoDB();
-    const user = await UserData.findOne({ email }).select("_id");
+    const user = await AllData.findOne({ email }).select("_id");
     if (user) {
       return NextResponse.json(
         { errors: "User Already Exist" },
         { status: 400 }
       );
     }
-    const data = await UserData.create({
-      firstname,
-      lastname,
+    const data = await AllData.create({
+      name,
       email,
-      fathersname,
-      mothersname,
+      password: hashSync(password, salt),
+      confirmpassword: hashSync(confirmpassword, salt),
       address,
       city,
-      pincode,
+      role
     });
 
     return NextResponse.json(

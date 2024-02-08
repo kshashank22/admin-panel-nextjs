@@ -2,26 +2,27 @@ import ExampleWithProviders from "@/components/usersData/UsersData";
 import axiosInstance from "@/utilities/axiosInstance";
 import React from "react";
 
-async function getUsers() {
-  const getResponse = await axiosInstance.get(`/api/getUserApi`);
+export async function getUsers(start:any,size:any) {
+  const getResponse = await axiosInstance.get(`/api/getUserApi?page=${start}&limit=${size}`);
   return getResponse.data.data;
 }
 
-export function getUsersData(pagination:any){
+export function getUsersData(){
   const url = new URL(
-    `/api/getUserApi?page=${pagination.pageIndex}&limit=${pagination.pageSize}}`,
+    `/api/getUserApi`,
     process.env.REACT_APP_BASE_URL === "production"
       ? "https://www.material-react-table.com"
       : "http://localhost:3000"
   );
+  console.log(url,"gvhbjnkm")
   return url
 }
 
 const Userpage = async () => {
-  const users = await getUsers();
+  //const users = await getUsers();
   return (
     <div className="relative">
-      <ExampleWithProviders users={users} />
+      <ExampleWithProviders />
     </div>
   );
 };

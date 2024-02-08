@@ -11,9 +11,10 @@ async function getAdmins() {
 
 const AdminPage = async () => {
   const admins:any = await getAdmins();
+  const filterAdmins:any=admins.filter((e:any)=>e.role==="Admin")
   return (
     <div className="relative">
-      <AdminsData admins={admins} />
+      <AdminsData admins={filterAdmins} />
     </div>
   );
 };

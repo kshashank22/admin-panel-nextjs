@@ -12,14 +12,13 @@ const AddUserData = () => {
   const routing = useRouter();
 
   const initialValues = {
-    firstname: "",
-    lastname: "",
+    name: "",
     email: "",
-    fathersname: "",
-    mothersname: "",
+    password: "",
+    confirmpassword: "",
     address: "",
     city: "",
-    pincode: null,
+    role: "User",
   };
 
   const formik = useFormik<any>({

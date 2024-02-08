@@ -8,6 +8,8 @@ export function middleware(request:any) {
   if (!islogin) {
     if (request.nextUrl.pathname.startsWith("/dashboard")) {
       return NextResponse.redirect(new URL("/", request.url));
+    }else if (request.nextUrl.pathname.startsWith("/user-dashboard")) {
+      return NextResponse.redirect(new URL("/", request.url));
     }
   } else if (islogin) {
     if (url.pathname === "/") {

@@ -2,20 +2,21 @@ import { connectMongoDB } from "@/mongoose/MongoDB";
 import { NextResponse } from "next/server";
 import { genSaltSync, hashSync } from "bcrypt-ts";
 import User from "@/models/RegisterSchema";
+import AllData from "@/models/DataSchema";
 
 export async function POST(req: any) {
+  await connectMongoDB();
   try {
     const salt = genSaltSync(10);
     const { name, email, password, confirmpassword, role } = await req.json();
-    await connectMongoDB();
-    const user = await User.findOne({ email }).select("_id");
+    const user = await AllData.findOne({ email }).select("_id");
     if (user) {
       return NextResponse.json(
         { errors: "User Already Exist" },
         { status: 400 }
       );
     }
-    const data = await User.create({
+    const data = await AllData.create({
       name,
       email,
       role,

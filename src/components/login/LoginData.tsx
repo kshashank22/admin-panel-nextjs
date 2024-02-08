@@ -34,7 +34,12 @@ const LoginData = () => {
               autoClose: 5000,
             });
             formik.resetForm();
-            window.location.href = "/dashboard";
+            if(res.role==="Admin"){
+              window.location.href = "/dashboard";
+            }else{
+              window.location.href = "/user-dashboard";
+            }
+            
             setLoader(false);
           } else {
             setLoader(false);

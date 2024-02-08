@@ -37,25 +37,20 @@ export const forgotValidateSchema: any = yup.object({
 });
 
 export const userValidateSchema: any = yup.object({
-  firstname: yup
+  name: yup
     .string()
-    .min(3, "Name required atleast 3 characters")
-    .required("FirstName is Required"),
-  lastname: yup
-    .string()
-    .min(3, "Name required atleast 3 characters")
-    .required("LastName is Required"),
+    .min(3, "Name must be atleast 3 characters")
+    .required("Name is Required"),
   email: yup.string().email("Email must valid").required("Email is Required"),
-  fathersname: yup
+  password: yup
     .string()
-    .min(3, "Name required atleast 3 characters")
-    .required("FathersName is Required"),
-  mothersname: yup
+    .required("Password is required")
+    .min(6, "Password must be at least 6 characters."),
+  confirmpassword: yup
     .string()
-    .min(3, "Name required atleast 3 characters")
-    .required("MothersName is Required"),
+    .oneOf([yup.ref("password")], "Passwords must match")
+    .required("Confirm Password is required"),
   address: yup.string().required("Address is Required"),
-  pincode: yup.string().required("Pincode is Required"),
   city: yup.string().required("City is Required"),
 });
 
@@ -75,12 +70,10 @@ export const ResetDetails = [
   { text: "Confirm New Password", id: "confirmpassword", type: "password" },
 ];
 export const UserDetails = [
-  { text: "FirstName", id: "firstname", type: "text" },
-  { text: "LastName", id: "lastname", type: "text" },
+  { text: "Name", id: "name", type: "text" },
   { text: "Email", id: "email", type: "email" },
-  { text: "FathersName", id: "fathersname", type: "text" },
-  { text: "MothersName", id: "mothersname", type: "text" },
+  { text: "New Password", id: "password", type: "password" },
+  { text: "Confirm New Password", id: "confirmpassword", type: "password" },
   { text: "Address", id: "address", type: "text" },
   { text: "City", id: "city", type: "text" },
-  { text: "Pincode", id: "pincode", type: "number" },
 ];

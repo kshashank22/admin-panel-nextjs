@@ -33,7 +33,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Link from "next/link";
-import { getUsersData } from "@/app/dashboard/userdata/page";
+import { getUsers, getUsersData } from "@/app/dashboard/userdata/page";
 
 type User = {
   id: string;
@@ -69,13 +69,11 @@ const usStates: string[] = [
 //my data below
 
 type Person = {
-  firstname: string;
-  lastname: string;
+  name: string;
   email: string;
-  fathersname: string;
-  mothersname: string;
+  password: string;
+  confirmpassword: string;
   address: string;
-  pincode: string;
   city: string;
 };
 
@@ -83,7 +81,7 @@ const UserData = ({ users }: any) => {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string | undefined>
   >({});
-  const [data, setData] = useState<any[]>([users]);
+  const [data, setData] = useState<Person[]>([]);
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
@@ -107,7 +105,7 @@ const UserData = ({ users }: any) => {
         } else {
           setIsRefetching(true);
         }
-        const url = getUsersData(pagination);
+        const url = getUsersData();
         url.searchParams.set(
           "start",
           `${pagination.pageIndex * pagination.pageSize}`
@@ -117,18 +115,28 @@ const UserData = ({ users }: any) => {
         url.searchParams.set("globalFilter", globalFilter ?? "");
         url.searchParams.set("sorting", JSON.stringify(sorting ?? []));
 
-        console.log("API Request URL:", url.href); // Log API request URL
+        console.log("11111111111111111 API Request URL:", url.href); // Log API request URL
+        
+
+
+        const newResponse=await getUsers(url.searchParams.get("start"),url.searchParams.get("size"))
+        const filterUser:any=newResponse.filter((e:any)=>e.role==="User")
+        console.log(newResponse,"testing")
+
+
 
         const response = await fetch(url.href);
+        console.log(url.searchParams.get("size"),"belowwww")
+        
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
         const json = await response.json();
-        console.log("API Response:", json); // Log API response
+        console.log("222222222222222222222 API Response:", json); // Log API response
 
-        setData(json.data);
-        setRowCount(json.data.length);
+        setData(filterUser);
+        setRowCount(filterUser.length);
         setIsError(false);
         setIsLoading(false);
         setIsRefetching(false);
@@ -153,37 +161,21 @@ const UserData = ({ users }: any) => {
   const columns = useMemo<MRT_ColumnDef<Person>[]>(
     () => [
       {
-        accessorKey: "firstname",
-        header: "First Name",
+        accessorKey: "name",
+        header: "Name",
         muiEditTextFieldProps: {
           required: true,
-          error: !!validationErrors?.firstname,
-          helperText: validationErrors?.firstname,
+          error: !!validationErrors?.name,
+          helperText: validationErrors?.name,
           //remove any previous validation errors when user focuses on the input
           onFocus: () =>
             setValidationErrors({
               ...validationErrors,
-              firstname: undefined,
+              name: undefined,
             }),
           //optionally add validation checking for onBlur or onChange
         },
       },
-      {
-        accessorKey: "lastname",
-        header: "Last Name",
-        muiEditTextFieldProps: {
-          required: true,
-          error: !!validationErrors?.lastname,
-          helperText: validationErrors?.lastname,
-          //remove any previous validation errors when user focuses on the input
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              lastname: undefined,
-            }),
-        },
-      },
-
       {
         accessorKey: "email",
         header: "Email",
@@ -200,36 +192,7 @@ const UserData = ({ users }: any) => {
             }),
         },
       },
-      {
-        accessorKey: "fathersname",
-        header: "Fathers Name",
-        muiEditTextFieldProps: {
-          required: true,
-          error: !!validationErrors?.fathersname,
-          helperText: validationErrors?.fathersname,
-          //remove any previous validation errors when user focuses on the input
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              fathersname: undefined,
-            }),
-        },
-      },
-      {
-        accessorKey: "mothersname",
-        header: "Mothers Name",
-        muiEditTextFieldProps: {
-          required: true,
-          error: !!validationErrors?.mothersname,
-          helperText: validationErrors?.mothersname,
-          //remove any previous validation errors when user focuses on the input
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              mothersname: undefined,
-            }),
-        },
-      },
+     
       {
         accessorKey: "address",
         header: "Address",
@@ -242,21 +205,6 @@ const UserData = ({ users }: any) => {
             setValidationErrors({
               ...validationErrors,
               address: undefined,
-            }),
-        },
-      },
-      {
-        accessorKey: "pincode",
-        header: "Pincode",
-        muiEditTextFieldProps: {
-          required: true,
-          error: !!validationErrors?.pincode,
-          helperText: validationErrors?.pincode,
-          //remove any previous validation errors when user focuses on the input
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              pincode: undefined,
             }),
         },
       },
@@ -546,19 +494,11 @@ const validateEmail = (email: string) =>
 
 function validateUser(user: Person) {
   return {
-    firstname: !validateRequired(user.firstname)
-      ? "First Name is Required"
+    name: !validateRequired(user.name)
+      ? "Name is Required"
       : "",
-    lastname: !validateRequired(user.lastname) ? "Last Name is Required" : "",
     email: !validateEmail(user.email) ? "Incorrect Email Format" : "",
-    fathersname: !validateRequired(user.fathersname)
-      ? "FathersName is Required"
-      : "",
-    mothersname: !validateRequired(user.mothersname)
-      ? "MothersName is Required"
-      : "",
     address: !validateRequired(user.address) ? "Address is Required" : "",
-    pincode: !validateRequired(user.pincode) ? "Pincode is Required" : "",
     city: !validateRequired(user.city) ? "City is Required" : "",
   };
 }
