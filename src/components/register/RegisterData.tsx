@@ -57,7 +57,6 @@ const RegisterData = () => {
           });
           formik.resetForm();
           routing.push("/login");
-          setLoader(false);
         } else {
           setLoader(false);
           setError("User Registration Failed");

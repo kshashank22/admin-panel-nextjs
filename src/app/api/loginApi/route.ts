@@ -13,14 +13,14 @@ export async function POST(req: any) {
     const user = await AllData.findOne({ email });
     if (!user) {
       return NextResponse.json(
-        { error: "Incorrect Email and Password" },
+        { error: "Incorrect Email" },
         { status: 404 }
       );
     }
     const bcryptpass = compareSync(password, user.password);
     if (!bcryptpass) {
       return NextResponse.json(
-        { error: "Incorrect Email and Password" },
+        { error: "Incorrect Password" },
         { status: 404 }
       );
     }

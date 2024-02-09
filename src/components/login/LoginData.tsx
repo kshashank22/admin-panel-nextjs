@@ -34,13 +34,11 @@ const LoginData = () => {
               autoClose: 5000,
             });
             formik.resetForm();
-            if(res.role==="Admin"){
+            if (res.role === "Admin") {
               window.location.href = "/dashboard";
-            }else{
+            } else {
               window.location.href = "/user-dashboard";
             }
-            
-            setLoader(false);
           } else {
             setLoader(false);
             setError("Token is Not Generated");
@@ -84,8 +82,10 @@ const LoginData = () => {
             </div>
           ))}
           <div className="m-5">
-          <Link href={"/forgotPassword"}>
-            <p className="cursor-pointer text-sm">Forgot the Password? Reset Here</p>
+            <Link href={"/forgotPassword"}>
+              <p className="cursor-pointer text-sm">
+                Forgot the Password? Reset Here
+              </p>
             </Link>
           </div>
           <div className="text-center">

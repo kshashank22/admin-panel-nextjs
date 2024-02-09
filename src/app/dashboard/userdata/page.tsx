@@ -14,7 +14,6 @@ export function getUsersData(){
       ? "https://www.material-react-table.com"
       : "http://localhost:3000"
   );
-  console.log(url,"gvhbjnkm")
   return url
 }
 

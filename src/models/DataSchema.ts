@@ -4,31 +4,32 @@ const DataSchema = new Schema(
   {
     name: {
       type: String,
-      required: false,
+      required: true,
     },
     email: {
       type: String,
-      required: false,
+      required: true,
+      unique:true
     },
     password: {
       type: String,
-      required: false,
+      required:true,
     },
     confirmpassword: {
       type: String,
-      required: false,
+      required: true,
     },
     role: {
       type: String,
-      required: false,
+      required: true,
     },
     address: {
       type: String,
-      required: false,
+      required: true,
     },
     city: {
       type: String,
-      required: false,
+      required: true,
     },
   },
   { timestamps: true }

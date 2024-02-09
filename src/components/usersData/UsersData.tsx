@@ -35,13 +35,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Link from "next/link";
 import { getUsers, getUsersData } from "@/app/dashboard/userdata/page";
 
-type User = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  state: string;
-};
+// type User = {
+//   id: string;
+//   firstName: string;
+//   lastName: string;
+//   email: string;
+//   state: string;
+// };
 // const fakeData: User[] = [
 //   {
 //     id: "1",
@@ -58,17 +58,18 @@ type User = {
 //     state: "CA",
 //   },
 // ];
-const usStates: string[] = [
-  "Alabama",
-  "Alaska",
-  "Arizona",
-  "Arkansas",
-  "California",
-];
+// const usStates: string[] = [
+//   "Alabama",
+//   "Alaska",
+//   "Arizona",
+//   "Arkansas",
+//   "California",
+// ];
 
 //my data below
 
 type Person = {
+  _id:string;
   name: string;
   email: string;
   password: string;
@@ -115,25 +116,26 @@ const UserData = ({ users }: any) => {
         url.searchParams.set("globalFilter", globalFilter ?? "");
         url.searchParams.set("sorting", JSON.stringify(sorting ?? []));
 
-        console.log("11111111111111111 API Request URL:", url.href); // Log API request URL
-        
+        //console.log("11111111111111111 API Request URL:", url.href); // Log API request URL
 
-
-        const newResponse=await getUsers(url.searchParams.get("start"),url.searchParams.get("size"))
-        const filterUser:any=newResponse.filter((e:any)=>e.role==="User")
-        console.log(newResponse,"testing")
-
-
+        const newResponse = await getUsers(
+          url.searchParams.get("start"),
+          url.searchParams.get("size")
+        );
+        const filterUser: any = newResponse.filter(
+          (e: any) => e.role === "User"
+        );
+        //console.log(newResponse, "testing");
 
         const response = await fetch(url.href);
-        console.log(url.searchParams.get("size"),"belowwww")
-        
+        //console.log(url.searchParams.get("size"), "belowwww");
+
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
         const json = await response.json();
-        console.log("222222222222222222222 API Response:", json); // Log API response
+        //console.log("222222222222222222222 API Response:", json); // Log API response
 
         setData(filterUser);
         setRowCount(filterUser.length);
@@ -160,6 +162,11 @@ const UserData = ({ users }: any) => {
 
   const columns = useMemo<MRT_ColumnDef<Person>[]>(
     () => [
+      {
+        accessorKey: "_id",
+        header: "Id",
+        enableEditing:false,
+      },
       {
         accessorKey: "name",
         header: "Name",
@@ -192,7 +199,7 @@ const UserData = ({ users }: any) => {
             }),
         },
       },
-     
+
       {
         accessorKey: "address",
         header: "Address",
@@ -292,9 +299,9 @@ const UserData = ({ users }: any) => {
     enableStickyFooter: true,
     muiTableBodyCellProps: {
       sx: (theme) => ({
-        backgroundColor:
-            theme.palette.grey[200]
-      })},
+        backgroundColor: theme.palette.grey[200],
+      }),
+    },
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
     onPaginationChange: setPagination,
@@ -404,17 +411,6 @@ function useCreateUser() {
             },
           ] as Person[]
       );
-      try {
-        const response = await fetch("../api/userRegisterApi", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newUserInfo),
-        });
-      } catch (error) {
-        console.log(error);
-      }
     },
     // onSettled: () => queryClient.invalidateQueries({ queryKey: ['users'] }), //refetch users after mutation, disabled for demo
   });
@@ -438,15 +434,23 @@ function useUpdateUser() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (user: Person) => {
+      const response = await fetch("../api/updateUserApi", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(user),
+      });
       //send api update request here
       await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
       return Promise.resolve();
     },
     //client side optimistic update
     onMutate: (newUserInfo: Person) => {
+      console.log(newUserInfo)
       queryClient.setQueryData(["users"], (prevUsers: any) =>
         prevUsers?.map((prevUser: Person) =>
-          prevUser.email === newUserInfo.email ? newUserInfo : prevUser
+          prevUser._id === newUserInfo._id ? newUserInfo : prevUser
         )
       );
     },
@@ -459,16 +463,25 @@ function useDeleteUser() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (user: string) => {
+      const response = await fetch("../api/deleteUserApi", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(user),
+      });
       //send api update request here
       await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
       return Promise.resolve();
     },
     //client side optimistic update
-    onMutate: (userId: string) => {
-      queryClient.setQueryData(["users"], (prevUsers: any) =>
-        prevUsers?.filter((user: Person) => user.email !== userId)
-      );
-    },
+    // onMutate: (email: string) => {
+    //   queryClient.setQueryData(['users'], (prevUsers: any) =>
+    //     prevUsers?.filter((user: Person) => {
+    //       console.log(user)
+    //       return user.email !== email}),
+    //   )
+    // },
     // onSettled: () => queryClient.invalidateQueries({ queryKey: ['users'] }), //refetch users after mutation, disabled for demo
   });
 }
@@ -494,9 +507,7 @@ const validateEmail = (email: string) =>
 
 function validateUser(user: Person) {
   return {
-    name: !validateRequired(user.name)
-      ? "Name is Required"
-      : "",
+    name: !validateRequired(user.name) ? "Name is Required" : "",
     email: !validateEmail(user.email) ? "Incorrect Email Format" : "",
     address: !validateRequired(user.address) ? "Address is Required" : "",
     city: !validateRequired(user.city) ? "City is Required" : "",
